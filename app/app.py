@@ -114,7 +114,8 @@ if __name__ == '__main__':
     log_level = os.environ.get("LOG_LEVEL", "INFO")
 
     logging.basicConfig(level=log_level)
-
+    logging.getLogger('telegram').setLevel(logging.INFO)
+    logging.getLogger('httpx._client').setLevel(logging.INFO)
 
     def sig_handler(sig_num, frame):
         logging.debug(f"Caught signal {sig_num}: {frame}")
