@@ -6,7 +6,7 @@ import signal
 
 import requests
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import urlparse, urlunparse
 
 from telegram import Update
@@ -71,7 +71,20 @@ class Telegram2Traccar():
 
         altitude = 0
 
-        query_string = f"id={dev_id}&lat={lat}&lon={lon}&altitude={altitude}&bearing={bearing}&speed={speed}&timestamp={timestamp}"
+        # extra attributes
+        
+        query_string = ""
+        ml = message.location.to_dict().keys()
+        if "live_period" in ml:
+            query_string += "&Telegram_share_time=%s" % str(timedelta(seconds=(message.location.live_period - (d - message.date).total_seconds())))
+
+        
+        # for attr in ['horizontal_accuracy', 'live_period']:
+        #     print (message.location.to_dict().keys())
+        #     if attr in message.location.to_dict().keys():
+        #         query_string += f"&TELEGRAM_{attr}={message.location[attr]}"
+
+        query_string = f"id={dev_id}&lat={lat}&lon={lon}&altitude={altitude}&bearing={bearing}&speed={speed}&timestamp={timestamp}" + query_string
         self.tx_to_traccar(query_string)
 
     
