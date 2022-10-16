@@ -12,6 +12,8 @@ from urllib.parse import urlparse, urlunparse
 from telegram import Update
 from telegram.ext import Application, ContextTypes, CommandHandler, MessageHandler, filters, CallbackContext
 
+import geopy
+import geopy.distance
 
 DEFAULT_TRACCAR_HOST = 'http://traccar:8082'
 
@@ -29,6 +31,7 @@ class Telegram2Traccar():
         self.traccar_host = conf.get("TraccarHost")
         self.traccar_osmand = conf.get("TraccarOsmand")
         telegram_token = conf.get("TelegramToken")
+        self.lastposition = {}
 
         self.application = Application.builder().token(telegram_token).build()
         self.application.add_handler(MessageHandler(filters.LOCATION, self.t_location))
@@ -47,7 +50,29 @@ class Telegram2Traccar():
             message = update.message
 
         LOGGER.debug(f"APRS message received: %s", str(message))
-        self.process_data(message)
+
+        lat = message.location.latitude
+        lon = message.location.longitude
+        dev_id = message.chat_id
+
+        d = message.edit_date or message.date
+        timestamp = int(datetime.timestamp(d))
+
+        bearing = message.location.heading or 0
+
+        point = geopy.Point(lat, lon)
+        lp = self.lastposition.get(dev_id)
+        if lp:            
+            distance = int(geopy.distance.distance(point, lp["point"]).m)
+            speed = int(distance / (d - lp["time"]).total_seconds() * 3.6)
+        else:
+            speed = 0
+        self.lastposition[dev_id] = {"point": point, "time": d}
+
+        altitude = 0
+
+        query_string = f"id={dev_id}&lat={lat}&lon={lon}&altitude={altitude}&bearing={bearing}&speed={speed}&timestamp={timestamp}"
+        self.tx_to_traccar(query_string)
 
     
 
@@ -70,18 +95,6 @@ class Telegram2Traccar():
 
 
 
-    def process_data(self, data):
-        lat = data.location.latitude
-        lon = data.location.longitude
-        dev_id = data.chat_id
-
-        d = data.edit_date or data.date
-        timestamp = int(datetime.timestamp(d))
-
-        bearing = data.location.heading or 0
-
-        query_string = f"id={dev_id}&lat={lat}&lon={lon}&bearing={bearing}&timestamp={timestamp}"
-        self.tx_to_traccar(query_string)
 
 
 if __name__ == '__main__':
