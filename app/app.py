@@ -63,8 +63,8 @@ class Telegram2Traccar():
         point = geopy.Point(lat, lon)
         lp = self.lastposition.get(dev_id)
         if lp:            
-            distance = int(geopy.distance.distance(point, lp["point"]).m)
-            speed = int(distance / (d - lp["time"]).total_seconds() * 3.6)
+            distance = geopy.distance.distance(point, lp["point"]).m
+            speed = round(distance / (d - lp["time"]).total_seconds() * 3.6, 1)
         else:
             speed = 0
         self.lastposition[dev_id] = {"point": point, "time": d}
