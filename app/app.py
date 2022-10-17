@@ -41,7 +41,7 @@ class Telegram2Traccar():
         self.application.run_polling()
 
     async def t_start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        await update.message.reply_text("Device dentifier: %s" % (str(update.message.chat_id)))
+        await update.message.reply_text("Device ID: %s" % (str(update.message.chat_id)))
 
     async def t_location(self, update: Update, context: CallbackContext) -> None:
         if update.edited_message:
