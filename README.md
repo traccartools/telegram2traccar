@@ -20,6 +20,7 @@ Clone this repo and then add this to your `docker-compose.yml` file:
     restart: unless-stopped
   ```
   
+  * `TELEGRAM_TOKEN` is your bot token. Please refer to Telegram [documentation](https://core.telegram.org/bots#how-do-i-create-a-bot) to create a Bot.
   * `TRACCAR_HOST` is your Traccar server's URI/URL. If run in the same docker-compose stack, name your Traccar service `traccar` and omit this env var.
   * `TRACCAR_OSMAND` is your Traccar server's Osmand protocol URL
   
