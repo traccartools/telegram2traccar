@@ -9,8 +9,8 @@ This little Docker container gets position shared with a telegram bot, and sends
 Clone this repo and then add this to your `docker-compose.yml` file:
 
 ```yaml
-  ttn2traccar:
-    build: https://github.com/itec78/telegram2traccar.git
+  telegram2traccar:
+    build: https://github.com/traccartools/telegram2traccar.git
     container_name: telegram2traccar  # optional
     environment:
       - "TELEGRAM_TOKEN" # telegram bot token
@@ -28,5 +28,5 @@ Clone this repo and then add this to your `docker-compose.yml` file:
 
 ### Traccar
 
-Create a device with ID = chat_id (received from bot)
+Create a device with ID = Device ID received from bot)
 
