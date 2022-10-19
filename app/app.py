@@ -70,22 +70,22 @@ class Telegram2Traccar():
         self.lastposition[dev_id] = {"point": point, "time": d}
 
         altitude = 0
-
-        # extra attributes
         
+        # extra attributes
         query_string = ""
+
+        query_string += "&Telegram_user=%s" % message.chat.username
+        
         ml = message.location.to_dict().keys()
         if "live_period" in ml:
             query_string += "&Telegram_share_time=%s" % str(timedelta(seconds=(message.location.live_period - (d - message.date).total_seconds())))
-
         
-        # for attr in ['horizontal_accuracy', 'live_period']:
-        #     print (message.location.to_dict().keys())
-        #     if attr in message.location.to_dict().keys():
-        #         query_string += f"&TELEGRAM_{attr}={message.location[attr]}"
+        if message.location.horizontal_accuracy:
+            query_string += "&Telegram_accuracy=%s" % message.location.horizontal_accuracy
 
         query_string = f"id={dev_id}&lat={lat}&lon={lon}&altitude={altitude}&bearing={bearing}&speed={speed}&timestamp={timestamp}" + query_string
         self.tx_to_traccar(query_string)
+
 
     
 
